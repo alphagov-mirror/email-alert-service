@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    healthcheck:
+      test: "redis-cli ping"
+
+  rabbitmq:
+    image: rabbitmq
+    healthcheck:
+      test: "rabbitmqctl node_health_check"
+
+  email-alert-service:
+    build:
+      context: ..
+      dockerfile: ci/Dockerfile
+    depends_on:
+      - rabbitmq
+      - redis
