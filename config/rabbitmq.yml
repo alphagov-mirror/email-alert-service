@@ -21,9 +21,14 @@ development:
 test:
   <<: *defaults
   amqp:
-    user: email_alert_service_test
-    pass: email_alert_service_test
-  exchange: email_alert_service_published_documents_test_exchange
+    hosts:
+      <% hosts = ENV['RABBITMQ_HOSTS'] || 'localhost' %>
+      <% hosts.split(",").each do |host| %>
+      - <%= host %>
+      <% end %>
+    user: <%= ENV['RABBITMQ_USER'] || 'email_alert_service_test' %>
+    pass: <%= ENV['RABBITMQ_PASSWORD'] || 'email_alert_service_test' %>
+  exchange: <%= ENV['RABBITMQ_EXCHANGE'] || 'email_alert_service_published_documents_test_exchange' %>
   queues:
     - processor: major_change_message_processor
       name: email_alert_service_published_documents_test_queue
