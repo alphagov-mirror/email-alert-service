@@ -1,4 +1,6 @@
 class MessageProcessor
+  attr_reader :logger
+
   def initialize(logger)
     @logger = logger
   end
@@ -8,9 +10,10 @@ class MessageProcessor
 
     message.ack
   rescue GdsApi::HTTPErrorResponse => e
-    @logger.info "Requeuing '#{message.payload['title']}' due to a #{e.code} response"
+    logger.info "Requeuing '#{message.payload['title']}' due to a #{e.code} response"
     message.retry
   rescue StandardError => e
+    logger.info "Discarding message with error #{e}"
     GovukError.notify(e)
     message.discard
   end
